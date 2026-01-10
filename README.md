@@ -83,7 +83,7 @@ will allow you to select patches by passing `--patch_*` flags through the
 command line. Run `--help` to get the most up-to-date list of existing
 patches.
 
-## Current CLI help and patches
+## Current CLI help
 
 > [!NOTE]
 > This might not always be up to date. Run `--help` yourself to get the most
@@ -91,8 +91,8 @@ patches.
 
 <!--CH0-->
 ```
-usage: kpp_patcher [-h] [--interactive | --no-interactive] [--patch_collection_not_synced_popup] [--patch_homepage]
-                   [--patch_registration_detection] [--patch_store_button]
+usage: kpp_patcher [-h] [--interactive | --no-interactive] [--patch_collection_not_synced_popup] [--patch_homepage] [--patch_registration_detection]
+                   [--patch_store_button]
                    filename
 
 Patch different behaviours of the Kindle KPP app
@@ -103,16 +103,50 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --interactive, --no-interactive
-                        Use interactive mode to select patches. If this option is set, cli choices are ignored. Disable with
-                        --no-interactive.
+                        Use interactive mode to select patches. If this option is set, cli choices are ignored. Disable with --no-interactive.
   --patch_collection_not_synced_popup
-                        Patch out the not synced popup when adding sideloaded content to collections.
+                        Patch out the not synced popup when adding sideloaded content to collections. When adding sideloaded content to collections, it will show a
+                        popup telling you that the content is not synced. This patch removes that popup. See docs/patch_collection_not_synced_popup.jpg
   --patch_homepage      Not yet documented
   --patch_registration_detection
                         Not yet documented
   --patch_store_button  Not yet documented
 ```
 <!--CH1-->
+
+## Current patches
+
+> [!NOTE]
+> This might not always be up to date. Run `--help` yourself to get the most
+> accurate information.
+
+<!--CP0-->
+### patch_collection_not_synced_popup
+
+Patch out the not synced popup when adding sideloaded content to collections.
+
+When adding sideloaded content to collections, it will show a popup telling
+you that the content is not synced. This patch removes that popup.
+
+![](docs/patch_collection_not_synced_popup.jpg)
+
+
+### patch_homepage
+
+Not yet documented
+
+
+### patch_registration_detection
+
+Not yet documented
+
+
+### patch_store_button
+
+Not yet documented
+
+
+<!--CP1-->
 
 
 [5.14.2 release]: https://blog.the-ebook-reader.com/2022/02/09/kindle-software-update-5-14-2-released/

@@ -185,7 +185,14 @@ def patch_store_button(khbc: KindleHBC) -> None:
 
 
 def patch_collection_not_synced_popup(khbc: KindleHBC) -> None:
-    """Patch out the not synced popup when adding sideloaded content to collections."""
+    """
+    Patch out the not synced popup when adding sideloaded content to collections.
+
+    When adding sideloaded content to collections, it will show a popup telling
+    you that the content is not synced. This patch removes that popup.
+
+    See docs/patch_collection_not_synced_popup.jpg
+    """
     logger.info("Patching collection not synced popup!")
     khbc.patch_func("showContentNotSyncedModal$", ALWAYS_UNDEFINED)
 
