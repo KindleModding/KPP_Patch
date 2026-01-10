@@ -183,7 +183,9 @@ def patch_store_button(khbc: KindleHBC) -> None:
 # patch = [('CreateClosure', [('Reg8', False, 1, fid)]), ]
 # khbc.patch_func("navigateToHome", ALWAYS_UNDEFINED)
 
+
 def patch_collection_not_synced_popup(khbc: KindleHBC) -> None:
+    """Patch out the not synced popup when adding sideloaded content to collections."""
     logger.info("Patching collection not synced popup!")
     khbc.patch_func("showContentNotSyncedModal$", ALWAYS_UNDEFINED)
 

@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from src.patcher.utils import current_patches
+from src.patcher.utils import current_patches, patch_doc
 
 
 def filetype(value: str) -> Path:
@@ -14,7 +14,7 @@ def filetype(value: str) -> Path:
         raise ValueError("Invalid value") from e
 
 
-def parse_cli() -> tuple[argparse.Namespace, "dict[str, PatchFunction]"]:
+def form_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kpp_patcher",
         description="Patch different behaviours of the Kindle KPP app",
@@ -38,13 +38,23 @@ def parse_cli() -> tuple[argparse.Namespace, "dict[str, PatchFunction]"]:
 
     patches = current_patches()
 
-    for name in patches.keys():
+    for name, patch in patches.items():
         parser.add_argument(
-            f"--{name}", action=argparse.BooleanOptionalAction, default=True
+            f"--{name}",
+            action="store_true",
+            default=False,
+            help=patch_doc(patch),
         )
+
+    return parser
+
+
+def parse_cli() -> tuple[argparse.Namespace, "dict[str, PatchFunction]"]:
+    parser = form_parser()
 
     args = parser.parse_args()
 
+    patches = current_patches()
     selected_patches = {k: v for k, v in patches.items() if getattr(args, k, False)}
 
     return args, selected_patches

@@ -51,3 +51,7 @@ def current_patches() -> dict[str, PatchFunction]:
         for name, obj in inspect.getmembers(patcher, inspect.isfunction)
         if matches_signature(obj, PatchFunction) and name.startswith("patch_")
     }
+
+
+def patch_doc(func: PatchFunction) -> str:
+    return inspect.getdoc(func) or "Not yet documented"

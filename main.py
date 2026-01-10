@@ -25,6 +25,9 @@ def main():
     if args.interactive and _HAS_CURSES:
         selected_patches = select_patches()
 
+    if not selected_patches:
+        raise SystemExit("Select at least one patch. Nothing done. Exiting...")
+
     khbc = KindleHBC(args.filename)
 
     for patch_name, patch in selected_patches.items():

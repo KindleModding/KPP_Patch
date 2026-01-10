@@ -1,9 +1,11 @@
 import curses
 
-from src.patcher.utils import PatchFunction, current_patches
+from src.patcher.utils import PatchFunction, current_patches, patch_doc
 
 
-def _menu(stdscr: curses.window, options: list[str]) -> dict[str, bool]:
+def _menu(
+    stdscr: curses.window, options: list[str], options_extra: list[str]
+) -> dict[str, bool]:
     if not options:
         return {}
 
@@ -14,14 +16,20 @@ def _menu(stdscr: curses.window, options: list[str]) -> dict[str, bool]:
     while True:
         stdscr.clear()
 
-        stdscr.addstr("Select options (space to toggle, Enter to confirm)\n\n")
+        stdscr.addstr("Select options (Space to toggle, Enter to confirm)\n\n")
 
         for i, opt in enumerate(options):
+            extra = ""
+            try:
+                extra = f": {options_extra[i]}"
+            except IndexError:
+                pass
+
             prefix = "[x] " if selected[i] else "[ ] "
             if i == index:
-                stdscr.addstr(prefix + opt + "\n", curses.A_REVERSE)
+                stdscr.addstr(prefix + opt + extra + "\n", curses.A_REVERSE)
             else:
-                stdscr.addstr(prefix + opt + "\n")
+                stdscr.addstr(prefix + opt + extra + "\n")
 
         key = stdscr.getch()
 
@@ -34,11 +42,15 @@ def _menu(stdscr: curses.window, options: list[str]) -> dict[str, bool]:
         elif key == ord("\n"):
             break
 
-    return {opt: sel for opt, sel in zip(options, selected)}
+    return dict(zip(options, selected))
 
 
 def select_patches() -> dict[str, PatchFunction]:
     patches = current_patches()
-    result = curses.wrapper(_menu, options=list(patches.keys()))
+    result = curses.wrapper(
+        _menu,
+        options=list(patches.keys()),
+        options_extra=list(patch_doc(patch) for patch in patches.values()),
+    )
 
     return {k: v for k, v in patches.items() if result.get(k, False)}
