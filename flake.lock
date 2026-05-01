@@ -18,7 +18,42 @@
         "type": "github"
       }
     },
+    "hermes_84": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      },
+      "locked": {
+        "lastModified": 1777628030,
+        "narHash": "sha256-5+E2trbYKoAkzIjf+M3D+KTMby7NRfZPxPRvHT1f+Fo=",
+        "owner": "Sighery",
+        "repo": "hermes_84-nix",
+        "rev": "ca71a434c92ccbce503988b4bdef03fddc51d6a7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Sighery",
+        "repo": "hermes_84-nix",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1487019476,
+        "narHash": "sha256-SzYOe2idGHMGahaWqxyBBGQP/8PTfAmukJ5k9yrh454=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c0c50dfcb70d48e5b79c4ae9f1aa9d339af860b4",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "c0c50dfcb70d48e5b79c4ae9f1aa9d339af860b4",
+        "type": "github"
+      }
+    },
+    "nixpkgs_2": {
       "locked": {
         "lastModified": 1767799921,
         "narHash": "sha256-r4GVX+FToWVE2My8VVZH4V0pTIpnu2ZE8/Z4uxGEMBE=",
@@ -37,7 +72,8 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "hermes_84": "hermes_84",
+        "nixpkgs": "nixpkgs_2"
       }
     },
     "systems": {
