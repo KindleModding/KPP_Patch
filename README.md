@@ -54,27 +54,65 @@ $ python main.py KPPMainApp.js.hbc
 
 $ file KPPMainApp.js.hbc.patched
 dump/KPPMainApp.js.hbc.patched: Hermes JavaScript bytecode, version 84
+```
 
-# To copy it back into the Kindle, you'll need to temporarly enable write
+### Getting the patch back into the Kindle
+
+Kindles have a read-only root system by default. You will need to
+**temporarily** disable it. It is **highly recommended** that you re-enable
+the read-only system afterwards. This can be done through the `mntroot rw`
+(mount as read-write) and `mntroot ro` (mount as read-only) commands.
+
+```sh
+# Temporarily enable the read-write mode
 $ ssh root@192.168.15.244
 [root@kindle root]$ mntroot rw
 [root@kindle root]$ exit
 
-$ scp KPPMainApp.js.hbc.patched root@192.168.15.244:/app/KPPMainApp/js/KPPMainApp.js.hbc
+# Copy the patched file, without overwriting the original
+$ scp KPPMainApp.js.hbc.patched root@192.168.15.244:/app/KPPMainApp/js/.
 
-# Remember to re-enable the read-only filesystem again
+# Make the system use the patched file without overwriting the original
 $ ssh root@192.168.15.244
+[root@kindle root]$ mount --bind /app/KPPMainApp/js/KPPMainApp.js.hbc.patched /app/KPPMainApp/js/KPPMainApp.js.hbc
+
+# RE-ENABLE READ-ONLY MODE NOW
 [root@kindle root]$ mntroot ro
 
-# Restart kppmainapp job to try the patches
+# Force a reload of the app, and check patches are working as expected
 [root@kindle root]$ restart kppmainapp
+[root@kindle root]$ exit
 ```
 
-If you get a white screen, or the patches don't seem to work as expected, you
-should restore the unpatched file. To do so, follow the same steps as before,
-just copy over the original unpatched file. When reporting issues with a
-patch, be sure to mention your exact Kindle device, your firmware version, as
-well as what patches did you apply, what you see, and what you expected to happen.
+This approach will _temporarily_ "replace" the original file with our
+patched file, until the next reboot. If the patches are not working as you
+expect it, don't panic, you can simply reboot your Kindle and it will go back
+to using the original file.
+
+If you are certain the patches are working as expected, you can then make this
+change permanent by replacing the original `KPPMainApp.js.hbc` file. You will
+need to temporarily disable read-only mode again.
+
+```sh
+$ ssh root@192.168.15.244
+[root@kindle root]$ mntroot rw
+
+# Make a backup of the original KPPMainApp.js.hbc file
+[root@kindle root]$ cp /app/KPPMainApp/js/KPPMainApp.js.hbc /app/KPPMainApp/js/KPPMainApp.js.hbc.bak
+# Replace the original file
+[root@kindle root]$ cp -f /app/KPPMainApp/js/KPPMainApp.js.hbc.patched /app/KPPMainApp/js/KPPMainApp.js.hbc
+
+# RE-ENABLE READ-ONLY MODE NOW
+[root@kindle root]$ mntroot ro
+[root@kindle root]$ exit
+```
+
+> [!IMPORTANT]
+> If you get a white screen, or the patches don't seem to work as expected,
+> you should restore the unpatched file. When reporting issues with a patch,
+> be sure to mention **your exact Kindle model**, **your firmware version**,
+> as well as **what patches did you apply**, **what you see**, and
+> **what you expected to happen**.
 
 ### Selecting patches
 
