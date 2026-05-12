@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .hints import current_patches, patch_doc
+from .hints import PatchFunction, current_patches, patch_doc
 
 
 def filetype(value: str) -> Path:

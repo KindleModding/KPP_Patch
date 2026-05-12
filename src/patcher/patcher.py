@@ -1,9 +1,9 @@
 import logging
 import re
 import tempfile
-from typing import Any
+from typing import Any, cast
 
-import hbctool
+from hbctool import hbc
 
 logger = logging.getLogger(__name__)
 
@@ -12,10 +12,14 @@ class KindleHBC:
     def __init__(self, path: str) -> None:
         self.out_path = tempfile.mkdtemp(prefix="KindleHBC")
         f = open(path, "rb")
-        self.hbcs = hbctool.hbc.load(f)
+        self.hbcs = cast(hbc.HBCBase, hbc.load(f))
         logger.info(f"HBC Version {self.hbcs.getVersion()}")
 
-    def find_func_by_name(self, name: str, disasm: bool = True) -> tuple:
+    def find_func_by_name(
+        self,
+        name: str,
+        disasm: bool = True,
+    ) -> tuple[int, hbc.FuncUnion | None]:
         for x in range(self.hbcs.getFunctionCount()):
             fnName = self.hbcs.getString(
                 self.hbcs.getObj()["functionHeaders"][x]["functionName"]
@@ -24,13 +28,19 @@ class KindleHBC:
                 return (x, self.hbcs.getFunction(x, disasm))
         return (-1, None)
 
-    def replace_func(self, fid: int, func: Any, new_func: Any) -> None:
-        fun_new = list(func)
-        fun_new[4] = new_func
+    def replace_func(
+        self,
+        fid: int,
+        func: hbc.FuncUnion,
+        new_insts: list[int] | list[hbc.InstructionDisassembled],
+    ) -> None:
+        fun_new = func._replace(instructions=new_insts)  # type: ignore[arg-type]
         self.hbcs.setFunction(fid, fun_new)
 
-    def check_func_patch(self, fid: int, patch: Any) -> bool:
-        fun = self.hbcs.getFunction(fid, disasm=True)
+    def check_func_patch(
+        self, fid: int, patch: list[hbc.InstructionDisassembled]
+    ) -> bool:
+        fun = self.hbcs.getDisassembledFunction(fid=fid)
         return fun[4] == patch
 
     def check_string_patch(self, sid: int, patch: Any) -> bool:
@@ -92,14 +102,11 @@ class KindleHBC:
         return sids
 
     def replace_string_ref_in_func(self, fid: int, og_sid: int, patch_sid: int) -> bool:
-        fun = self.hbcs.getFunction(fid)
-        insts = fun[4]
+        fun = self.hbcs.getDisassembledFunction(fid=fid)
+        insts = fun.instructions
         for x in insts:
-            if x[0] == "GetById":
-                if x[1][3][2] == og_sid:
-                    x[1][3] = list(x[1][3])
-                    x[1][3][2] = patch_sid
-                    x[1][3] = tuple(x[1][3])
+            if x.instruction == "GetById" and x.arguments[3].arg_value == og_sid:
+                x.arguments[3]._replace(arg_value=patch_sid)
         return self.patch_func_by_id(fid, fun, insts)
 
     def patch_string_regex(self, regex: str, patched: str) -> bool:
@@ -140,4 +147,4 @@ class KindleHBC:
 
     def dump(self, path: str) -> None:
         with open(path, "wb+") as f:
-            hbctool.hbc.dump(self.hbcs, f)
+            hbc.dump(self.hbcs, f)

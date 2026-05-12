@@ -1,7 +1,11 @@
 import functools
 import inspect
 import sys
-from typing import Protocol, get_type_hints
+from types import ModuleType
+from typing import TYPE_CHECKING, Any, Callable, Protocol, get_type_hints
+
+if TYPE_CHECKING:
+    from src.patcher.patcher import KindleHBC
 
 
 class PatchFunction(Protocol):
@@ -23,8 +27,8 @@ def normalise(t: object) -> object:
     return t
 
 
-def matches_signature(fn, proto: Protocol) -> bool:
-    module = sys.modules.get(fn.__module__, {})
+def matches_signature(fn: Callable[..., Any], proto: Any) -> bool:
+    module: ModuleType | dict = sys.modules.get(fn.__module__, {})
 
     proto_sig = strip_self(inspect.signature(proto.__call__))
     proto_hints = get_type_hints(proto.__call__, globalns=module.__dict__, localns={})
