@@ -1,11 +1,21 @@
 [project]
 name = "kpp_patch"
 version = "0.1.0"
-description = "Add your description here"
+description = "Patching the Kindle's React Native homepage app to remove annoyances"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    {name = "notmarek", email = "github@notmarek.com"},
+    {name = "Sighery"},
+]
+maintainers = [
+    {name = "notmarek", email = "github@notmarek.com"},
+    {name = "Sighery"},
+]
 requires-python = ">=3.13"
 dependencies = [
-    "hbctool @ git+https://github.com/bongtrop/hbctool.git@add-hbc-83-89-and-improve-contribution",
+    "hbctool @ git+https://github.com/Sighery/hbctool.git",
 ]
 
 [project.optional-dependencies]
