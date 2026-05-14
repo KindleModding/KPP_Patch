@@ -1,6 +1,6 @@
 import curses
 
-from .hints import PatchFunction, current_patches, patch_doc
+from .hints import PatchFunction, stable_patches, patch_doc
 
 
 def _menu(stdscr: curses.window, options: list[str]) -> dict[str, bool]:
@@ -38,7 +38,7 @@ def _menu(stdscr: curses.window, options: list[str]) -> dict[str, bool]:
 
 
 def select_patches() -> dict[str, PatchFunction]:
-    patches = current_patches()
+    patches = stable_patches()
     result = curses.wrapper(
         _menu,
         options=list(patches.keys()),

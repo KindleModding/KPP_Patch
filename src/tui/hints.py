@@ -47,7 +47,7 @@ def matches_signature(fn: Callable[..., Any], proto: Any) -> bool:
 
 
 @functools.cache
-def current_patches() -> dict[str, PatchFunction]:
+def all_patches() -> dict[str, PatchFunction]:
     from src.patcher import patches
 
     return {
@@ -55,6 +55,10 @@ def current_patches() -> dict[str, PatchFunction]:
         for name, obj in inspect.getmembers_static(patches, inspect.isfunction)
         if name.startswith("patch_") and matches_signature(obj, PatchFunction)
     }
+
+
+def stable_patches() -> dict[str, PatchFunction]:
+    return {k: v for k, v in all_patches().items() if "wip" not in k.lower()}
 
 
 def patch_doc(func: PatchFunction) -> str:

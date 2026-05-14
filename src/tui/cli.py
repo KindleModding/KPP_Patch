@@ -1,7 +1,7 @@
 import argparse
 from pathlib import Path
 
-from .hints import PatchFunction, current_patches, patch_doc
+from .hints import PatchFunction, all_patches, patch_doc
 
 
 def filetype(value: str) -> Path:
@@ -36,14 +36,15 @@ def form_parser() -> argparse.ArgumentParser:
         ),
     )
 
-    patches = current_patches()
+    patches = all_patches()
 
     for name, patch in patches.items():
+        help_msg = argparse.SUPPRESS if "wip" in name.lower() else patch_doc(patch)
         parser.add_argument(
             f"--{name}",
             action="store_true",
             default=False,
-            help=patch_doc(patch),
+            help=help_msg,
         )
 
     return parser
@@ -54,7 +55,7 @@ def parse_cli() -> tuple[argparse.Namespace, "dict[str, PatchFunction]"]:
 
     args = parser.parse_args()
 
-    patches = current_patches()
+    patches = all_patches()
     selected_patches = {k: v for k, v in patches.items() if getattr(args, k, False)}
 
     return args, selected_patches

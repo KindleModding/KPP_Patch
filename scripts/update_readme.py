@@ -9,7 +9,7 @@ sys.path.append(str(ROOT))
 
 
 from src.tui.cli import form_parser
-from src.tui.hints import current_patches, patch_doc
+from src.tui.hints import stable_patches, patch_doc
 
 
 def update_help():
@@ -75,7 +75,7 @@ def update_patches():
 
     processed = []
 
-    patches = current_patches()
+    patches = stable_patches()
 
     with open("README.md", "r", encoding="utf-8") as readme:
         in_replace = False
