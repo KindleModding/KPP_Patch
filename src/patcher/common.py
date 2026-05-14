@@ -26,3 +26,6 @@ ALWAYS_UNDEFINED = _bare_to_typed(
 EMPTY_OBJECT = _bare_to_typed(
     [("NewObject", [("Reg8", False, 0)]), ("Ret", [("Reg8", False, 0)])]
 )
+EMPTY_ENVIRONMENT = _bare_to_typed(
+    [("CreateEnvironment", [("Reg8", False, 0)]), ("Ret", [("Reg8", False, 0)])]
+)

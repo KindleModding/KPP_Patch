@@ -36,6 +36,7 @@ def main():
 
     patchf = args.filename.with_name(f"{args.filename.name}.patched")
     khbc.dump(patchf)
+    logger.info("Done! Your patch file is in %s", patchf)
 
 
 if __name__ == "__main__":

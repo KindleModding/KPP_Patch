@@ -5,6 +5,8 @@ from typing import Any, cast
 
 from hbctool import hbc
 
+from src.utils.collections import Pattern, replace_sequences
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,11 +52,11 @@ class KindleHBC:
     def patch_func(self, function_name: str, patch: Any) -> bool:
         logger.info(f"Patching {function_name}.")
         fid, fun = self.find_func_by_name(function_name)
-        return self.patch_func_by_id(fid, fun, patch)
+        return self._patch_func_by_id(fid, fun, patch)
 
-    def patch_func_by_id(self, fid: int, fun: Any, patch: Any) -> bool:
+    def _patch_func_by_id(self, fid: int, fun: Any, patch: Any) -> bool:
         if fid < 0:
-            logger.info(f"Function not found!")
+            logger.info("Function not found!")
             return False
         self.replace_func(fid, fun, patch)
         if self.check_func_patch(fid, patch):
@@ -62,6 +64,35 @@ class KindleHBC:
             return True
         logger.info("Unknown error!")
         return False
+
+    def patch_func_by_id(self, fid: int, patch: Any) -> bool:
+        try:
+            func = self.hbcs.getDisassembledFunction(fid)
+        except Exception:
+            logger.exception("Failed to find function %d", fid)
+            return False
+
+        return self._patch_func_by_id(fid=fid, fun=func, patch=patch)
+
+    def patch_func_patterns_by_id(self, fid: int, patterns: list[Pattern]) -> bool:
+        if fid < 0:
+            logger.warn("Function not found!")
+            return False
+
+        try:
+            func = self.hbcs.getDisassembledFunction(fid)
+        except Exception:
+            logger.exception("Failed to find function %d", fid)
+            return False
+
+        patched_insts = replace_sequences(func.instructions, patterns)
+        self.replace_func(fid, func, patched_insts)
+
+        if not self.check_func_patch(fid, patched_insts):
+            logger.info("Patch unsuccessful!")
+            return False
+
+        return True
 
     def find_strings_regex(
         self, regex: str, min_len: int = 0
@@ -107,7 +138,7 @@ class KindleHBC:
         for x in insts:
             if x.instruction == "GetById" and x.arguments[3].arg_value == og_sid:
                 x.arguments[3]._replace(arg_value=patch_sid)
-        return self.patch_func_by_id(fid, fun, insts)
+        return self._patch_func_by_id(fid, fun, insts)
 
     def patch_string_regex(self, regex: str, patched: str) -> bool:
         # if (len(orig) != len(patched)):

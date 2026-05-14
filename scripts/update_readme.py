@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 
-from src.patcher.utils import current_patches, patch_doc
+# Resolve top reference for finding src module
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.append(str(ROOT))
+
+
 from src.tui.cli import form_parser
+from src.tui.hints import current_patches, patch_doc
 
 
 def update_help():
